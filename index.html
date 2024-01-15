@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Visualization Tool</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            background-color: #f2f2f2;
+        }
+
+        .title-container {
+            width: 100%;
+            padding: 10px 0;
+            background-color: #333;
+            margin-bottom: 10px;
+            border-radius: 25px;
+        }
+
+        .title-container h2 {
+            margin: 0;
+            color: #fff;
+            font-size: 2.5em;
+        }
+
+        .row {
+            display: flex;
+        }
+
+        .column {
+            flex: 1;
+            margin-left: 0px;
+        }
+
+        #search-input {
+            border-radius: 25px;
+        }
+
+        #graphviz {
+            width: 100%;
+            height: 80vh;
+            border-top: none;
+            margin-right: 250px;
+        }
+
+        .btn {
+            background-color: #007bff;
+            color: #fff;
+            border: 1px solid #007bff;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 25px;
+        }
+
+        .link-highlight {
+            stroke: blue;
+            opacity: 1.0;
+            stroke-width: 5;
+        }
+
+        .node-highlight {
+            stroke-width: 3;
+        }
+
+        .link-unfocused {
+            opacity: 0.3;
+            stroke: grey;
+        }
+
+        .node-unfocused {
+            opacity: 0.3;
+            fill: grey;
+        }
+
+        .node-focused {
+            opacity: 1.0;
+            stroke-width: 3;
+        }
+
+        #titleNode {
+            margin-bottom: 2px;
+        }
+
+        #showText {
+            margin-bottom: 10px;
+            border-radius: 25px;
+            background-color: #007bff;
+        }
+
+        #largestComp {
+            position: absolute;
+            top: -630px;
+            left: 195px;
+        }
+
+        #switchLayout {
+            position: absolute;
+            top: -630px;
+            left: 195px;
+        }
+
+        #readme {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            border-radius: 25px;
+        }
+
+        #readme:hover {
+            background-color: #555;
+        }
+
+        #removeNodes {
+            position: absolute;
+            top: -630px;
+            left: 195px;
+        }
+
+        #computeStats {
+            position: absolute;
+            top: -630px;
+            left: 195px;
+        }
+
+        #stats {
+            position: absolute;
+            top: -630px;
+            left: -370px;
+        }
+
+        #moddAtt {
+            position: absolute;
+            top: -500px;
+            left: 0px;
+        }
+
+        #changeNodes {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+        }
+
+        #showLab {
+            position: absolute;
+            top: 700px;
+            left: 999px;
+        }
+
+        #movie-poster {
+            width: 200px;
+            height: 200px;
+        }
+
+        #attributeNode {
+            position: absolute;
+            top: -500px;
+            left: 0px;
+        }
+
+        #top {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            outline: none;
+            border-radius: 25px;
+        }
+        
+    </style>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="graphview.js"></script>
+</head>
+
+<body>
+    <div class="title-container">
+        <h2>IMDB Movies Graph</h2>
+    </div>
+    <div class="row">
+        <div class="column" style="flex: 15%;">
+            <h4 id="titleNode"> Search for node</h4>
+            <div class="d-flex">
+                <input id="search-input" class="form-control me-1" type="search" placeholder="Search"
+                    aria-label="Search">
+                <button id="search-button" class="btn btn-primary" type="submit">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+
+            <div id="text-info">
+                <h4>Movie Info</h4>
+                <img id="movie-poster" src="" alt="Movie Poster">
+                <p> Movie: <span id="movie-name"></span></p>
+                <p> Movie ID: <span id="movie-id"></span></p>
+                <p> Rank: <span id="movie-rank"></span></p>
+                <p> Year of Release: <span id="release-year"></span></p>
+                <p> IMDb Rating: <span id="imdb-rating"></span></p>
+                <p> Total Duration: <span id="total-duration"></span></p>
+                <p> Genre: <span id="genre"></span></p>
+                <p> Director: <span id="director"></span></p>
+            </div>
+
+            <div id="removeNodes">
+                <input id="search-node-input" type="text" placeholder="Enter Node ID">
+                <button id="search-node-button">Search and Remove Node</button>
+
+                <input id="search-edge-source-input" type="text" placeholder="Source Node ID">
+                <input id="search-edge-target-input" type="text" placeholder="Target Node ID">
+                <button id="search-edge-button">Search and Remove Edge</button>
+            </div>
+
+            <button id="computeStats">Compute statistics</button>
+            <div id="stats">
+                <p>Average Node Degree: <span id="avgDegree"></span></p>
+                <p>Number of Connected Components: <span id="numComponents"></span></p>
+                <p>Graph Density: <span id="graphDensity"></span></p>
+                <p>Graph Diameter: <span id="diameter"></span></p>
+                <p>Average Shortest Path Lenght <span id="apl"></span></p>
+            </div>
+
+            <div id="attributeNode">
+                Node ID: <input type="text" id="nodeIdInput" />
+                Attribute: <input type="text" id="attributeInput" />
+                New Value: <input type="text" id="newValueInput" />
+                <button id="updateAttributeButton">Update Attribute</button>
+            </div>
+
+            <div id="top">
+                <select id="dropdown-element">
+                    <option value="movieName">Movie Name</option>
+                    <option value="genre">Genre</option>
+                    <option value="director">Director</option>
+                    <option value="movieID">Movie ID</option>
+                </select>
+                <button id="showText">Show Labels</button>
+            </div>
+
+            <button id="largestComp">Extract largest component</button>
+            <button id="switchLayout">Switch layout</button>
+        </div>
+        <div class="column" id="graphviz">
+            <svg class="col-10" id="svgGraph"
+                style="width: 100%; height: 100%; margin-left: auto; margin: 0; padding: 0;"></svg>
+        </div>
+    </div>
+
+    <button id="readme">How To</button>
+    <script>
+        // Get a reference to the button by its ID
+        const readmeButton = document.getElementById("readme");
+
+        // Add a click event listener to the button
+        readmeButton.addEventListener("click", function () {
+            alert('Welcome user! Explore movie connections in our IMDB Graph Tool! Movies are linked based on shared actors, creating an intuitive network. Hover over a movie to reveal details like title, release year, and director. Use the search bar to find specific movies. You can turn the labels on/off for each node and change the labels. Enjoy a cinematic journey through interconnected films!');
+        });
+    </script>
+
+
+
+    <script type="module" src="index.js"></script>
+</body>
+
+</html>

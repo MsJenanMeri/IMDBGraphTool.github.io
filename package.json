@@ -1,0 +1,33 @@
+{
+  "name": "CSC343-F23-HW4",
+  "version": "1.0.0",
+  "description": "CSC 343 Human Computer Interaction: Assignment 4 taught by Stephen Kobourov, Haris Riaz, Aayush Pinto & Jacob Miller at the University of Arizona, Fall 2023",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+      "test": "mocha tests.js"
+  },
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/hriaz17/CSC343-F23-HW4"
+  },
+  "keywords": [
+      "graph",
+      "analysis",
+      "assignment",
+      "javascript"
+  ],
+  "author": "Haris Riaz",
+  "license": "MIT",
+  "dependencies": {
+      "d3": "^7.8.5",
+      "express": "^4.18.2",
+      "http-server": "^14.1.1",
+      "jsdom": "^22.1.0",
+      "node-fetch": "^2.6.7"
+  },
+  "devDependencies": {
+      "chai": "^4.3.8",
+      "mocha": "^10.2.0"
+  }
+}
